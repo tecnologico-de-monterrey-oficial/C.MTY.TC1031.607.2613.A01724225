@@ -1,0 +1,3 @@
+1. La ventaja es que ahora puedo utilizar el tipo de dato que quiera. Esto se ve de ejemplo en main, donde utilizo strings ints, double y para todo utilizo las mismas funciones. No tengo que copiar templates ni nada
+2. El que más me costó fue insertAt, más que nada la lógica. Simplemente intenté varias formas a ver cuál salía mejor. 
+3. Le diría que es una forma de hacer funciones y clases que se pueden utilizar con varios tipos de datos. 

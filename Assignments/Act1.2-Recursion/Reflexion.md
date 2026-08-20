@@ -1,0 +1,3 @@
+1. Siendo sincero, no noté que una fuera más lenta o que tome más memoria, las vi igual. Sé que en teoría hay veces en que recursiva es más lenta o más rápida (más rápida en casos como grafos), pero aquí no noté diferencia. 
+2. Nos dice que tiene menos complejidad computacional
+3. Podría haber un problema de memoria, porque se quedan funciones "esperando" a sre respondidas. En algunas computadoras no es problema, pero si es ineficiente y en computadoras más chicas puede ser un problema. Podemos resolverlo utilizando una ecuación o utilizando iteración en lugar de recursividad. c

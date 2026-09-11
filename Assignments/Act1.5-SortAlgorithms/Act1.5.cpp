@@ -4,7 +4,7 @@
 using namespace std; 
 
 template <typename T> 
-vector<T> sSort(vector<T> v) {
+vector<T> swapSort(vector<T> v) {
     for (int i = 0; i < v.size() -1; i++) {
 
         for (int j = i + 1; j < v.size(); j++) {
@@ -64,7 +64,7 @@ vector<T> bubbleSort(vector<T> v) {
 template <typename T> 
 vector<T> insertionSort(vector<T> v) {
     
-    for (int i = 0; i < v.size(); i++) {
+    for (int i = 1; i < v.size(); i++) {
         for (int j = i -1; j >=0; j--) {
             if (v[j] > v[j+1]) {
                 T temp = v[j + 1]; 
@@ -99,7 +99,7 @@ int main() {
     vector<int> nums = {1, 4, 23, 99, 2, 15, 3, 54, 101}; 
     
     cout << "Selection Sort: "; 
-    printVect(sSort(nums)); 
+    printVect(swapSort(nums)); 
 
     // printVect(nums); 
     cout << "Bubble Sort: "; 

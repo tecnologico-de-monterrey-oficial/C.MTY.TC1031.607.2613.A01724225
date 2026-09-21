@@ -1,5 +1,8 @@
+#include <chrono>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -294,6 +297,153 @@ vector<T> mergeSort(vector<T> v) {
     return v;
 }
 
+struct InfoAlgoritmo {
+    string nombre;
+    string mejorCaso;
+    string peorCaso;
+};
+
+const InfoAlgoritmo ALGORITMOS[] = {
+    {"Swap Sort", "O(n^2)", "O(n^2)"},
+    {"Bubble Sort", "O(n)", "O(n^2)"},
+    {"Selection Sort", "O(n^2)", "O(n^2)"},
+    {"Insertion Sort", "O(n)", "O(n^2)"},
+    {"Merge Sort", "O(n log n)", "O(n log n)"},
+    {"Quick Sort", "O(n log n)", "O(n^2)"},
+    {"Shell Sort", "depende de la secuencia de saltos", "O(n^2)"}
+};
+
+int leerOpcion(int minimo, int maximo) {
+    int opcion;
+
+    while (!(cin >> opcion) || opcion < minimo || opcion > maximo) {
+        if (cin.eof()) {
+            return maximo;
+        }
+
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Opcion invalida. Intenta nuevamente: ";
+    }
+
+    return opcion;
+}
+
+vector<Registro> ordenarRegistros(
+    const vector<Registro> &registros,
+    int algoritmo
+) {
+    switch (algoritmo) {
+        case 1:
+            return swapSort(registros);
+        case 2:
+            return bubbleSort(registros);
+        case 3:
+            return selectionSort(registros);
+        case 4:
+            return insertionSort(registros);
+        case 5:
+            return mergeSort(registros);
+        case 6: {
+            vector<Registro> resultado = registros;
+
+            if (!resultado.empty()) {
+                quickSort(resultado, 0, static_cast<int>(resultado.size()) - 1);
+            }
+
+            return resultado;
+        }
+        case 7:
+            return shellSort(registros);
+        default:
+            return registros;
+    }
+}
+
+void mostrarAlgoritmos() {
+    cout << "\n===== ALGORITMOS DISPONIBLES =====\n";
+
+    for (int i = 0; i < 7; i++) {
+        cout << i + 1 << ". " << ALGORITMOS[i].nombre << '\n';
+    }
+}
+
 int main() {
+    char repetir = 's';
+
+    while (repetir == 's' || repetir == 'S') {
+        cout << "\n===== SELECCION DEL ARCHIVO =====\n"
+             << "1. log607-1.txt (desordenado)\n"
+             << "2. log607-2.txt (casi ordenado)\n"
+             << "Selecciona el archivo: ";
+
+        int opcionArchivo = leerOpcion(1, 2);
+        string nombreArchivo = opcionArchivo == 1
+            ? "log607-1.txt"
+            : "log607-2.txt";
+
+        vector<Registro> registros = leerArchivo(nombreArchivo);
+
+        if (registros.empty()) {
+            cout << "No se encontraron registros. Verifica que el archivo "
+                 << "este en la carpeta desde la que ejecutas el programa.\n";
+        } else {
+            mostrarAlgoritmos();
+            cout << "Selecciona el algoritmo: ";
+            int opcionAlgoritmo = leerOpcion(1, 7);
+
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            string prediccion;
+            cout << "\nEscribe tu prediccion para esta combinacion.\n"
+                 << "Indica que tan rapida o lenta esperas que sea y por que:\n";
+            getline(cin, prediccion);
+
+            cout << "\nEjecutando "
+                 << ALGORITMOS[opcionAlgoritmo - 1].nombre << "...\n";
+
+            auto inicio = chrono::high_resolution_clock::now();
+            vector<Registro> ordenados = ordenarRegistros(
+                registros,
+                opcionAlgoritmo
+            );
+            auto fin = chrono::high_resolution_clock::now();
+
+            chrono::duration<double, milli> duracion = fin - inicio;
+
+            cout << fixed << setprecision(4)
+                 << "\n===== RESULTADOS =====\n"
+                 << "Algoritmo: "
+                 << ALGORITMOS[opcionAlgoritmo - 1].nombre << '\n'
+                 << "Archivo: " << nombreArchivo << '\n'
+                 << "Cantidad de registros: " << registros.size() << '\n'
+                 << "Tiempo de ordenamiento: " << duracion.count()
+                 << " milisegundos\n"
+                 << "Mejor caso teorico: "
+                 << ALGORITMOS[opcionAlgoritmo - 1].mejorCaso << '\n'
+                 << "Peor caso teorico: "
+                 << ALGORITMOS[opcionAlgoritmo - 1].peorCaso << '\n'
+                 << "Prediccion inicial: " << prediccion << '\n';
+
+            char coincidencia;
+            cout << "El resultado coincidio con tu prediccion? (s/n): ";
+            cin >> coincidencia;
+
+            if (coincidencia == 's' || coincidencia == 'S') {
+                cout << "El resultado si coincidio con la prediccion.\n";
+            } else {
+                cout << "El resultado no coincidio con la prediccion.\n";
+            }
+
+            if (guardarArchivo("output608.txt", ordenados)) {
+                cout << "Resultado guardado en output608.txt\n";
+            }
+        }
+
+        cout << "\nDeseas realizar otra corrida? (s/n): ";
+        cin >> repetir;
+    }
+
+    cout << "\nPrograma terminado.\n";
     return 0;
 }

@@ -50,4 +50,4 @@ El rango incluye las fechas inicial y final. Cuando existen timestamps duplicado
 
 ## Uso de inteligencia artificial
 
-Más que nada la utilizé para revisar un problema que tuve con el algoritmo de quick sort. No permití que se metiera con otras partes del código. 
+Más que nada la utilizé para revisar un problema que tuve con el algoritmo de quick sort. No permití que se metiera con otras partes del código, también me ayudó a crear este README. 

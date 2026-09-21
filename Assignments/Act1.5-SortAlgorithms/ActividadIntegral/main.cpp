@@ -1,8 +1,26 @@
 #include <iostream>
+#include <string>
 #include <utility>
 #include <vector>
 
 using namespace std;
+
+struct Registro {
+    long long fechaHora;
+    string lineaOriginal;
+
+    bool operator<(const Registro &otro) const {
+        return fechaHora < otro.fechaHora;
+    }
+
+    bool operator>(const Registro &otro) const {
+        return fechaHora > otro.fechaHora;
+    }
+
+    bool operator<=(const Registro &otro) const {
+        return fechaHora <= otro.fechaHora;
+    }
+};
 
 template <typename T>
 vector<T> swapSort(vector<T> v) {

@@ -310,7 +310,7 @@ const InfoAlgoritmo ALGORITMOS[] = {
     {"Insertion Sort", "O(n)", "O(n^2)"},
     {"Merge Sort", "O(n log n)", "O(n log n)"},
     {"Quick Sort", "O(n log n)", "O(n^2)"},
-    {"Shell Sort", "depende de la secuencia de saltos", "O(n^2)"}
+    {"Shell Sort", "O(n log n)", "O(n^2)"}
 };
 
 int leerOpcion(int minimo, int maximo) {

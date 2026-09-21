@@ -4,14 +4,14 @@
 
 Ejecuté los siete algoritmos con los dos archivos. En total se hicieron 14 pruebas.
 
-En cada prueba revisamos que:
+En cada prueba revisé que:
 
 - El programa leyera los 6,818 registros.
 - Los registros quedaran ordenados por fecha y hora.
 - Se creara `output608.txt`.
 - Un rango sin registros produjera un `range607.txt` vacío.
 
-También usamos una fecha duplicada como inicio y fin para comprobar que el programa incluyera todos los registros con esa fecha una sola vez.
+También usé una fecha duplicada como inicio y fin para comprobar que el programa incluyera todos los registros con esa fecha una sola vez.
 
 ## Capturas de las pruebas
 

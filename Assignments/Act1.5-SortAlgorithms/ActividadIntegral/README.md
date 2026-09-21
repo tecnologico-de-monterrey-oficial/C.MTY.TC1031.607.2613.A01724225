@@ -50,6 +50,4 @@ El rango incluye las fechas inicial y final. Cuando existen timestamps duplicado
 
 ## Uso de inteligencia artificial
 
-Se permitió utilizar inteligencia artificial como apoyo para interpretar requisitos, integrar partes del programa, detectar errores, organizar las pruebas y mejorar la documentación. El código y los resultados fueron revisados por el estudiante.
-
-No se permitió que la inteligencia artificial realizara commits, subiera la entrega o sustituyera la explicación personal del estudiante.
+Más que nada la utilizé para revisar un problema que tuve con el algoritmo de quick sort. No permití que se metiera con otras partes del código. 

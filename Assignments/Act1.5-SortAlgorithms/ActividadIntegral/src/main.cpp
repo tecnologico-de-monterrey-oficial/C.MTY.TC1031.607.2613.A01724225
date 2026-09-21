@@ -493,8 +493,8 @@ int main() {
 
         int opcionArchivo = leerOpcion(1, 2);
         string nombreArchivo = opcionArchivo == 1
-            ? "log607-1.txt"
-            : "log607-2.txt";
+            ? "data/log607-1.txt"
+            : "data/log607-2.txt";
 
         vector<Registro> registros = leerArchivo(nombreArchivo);
 
@@ -549,8 +549,8 @@ int main() {
                 cout << "El resultado no coincidio con la prediccion.\n";
             }
 
-            if (guardarArchivo("output608.txt", ordenados)) {
-                cout << "Resultado guardado en output608.txt\n";
+            if (guardarArchivo("out/output608.txt", ordenados)) {
+                cout << "Resultado guardado en out/output608.txt\n";
             }
 
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -594,8 +594,8 @@ int main() {
 
             cout << "Total de registros encontrados: " << rango.size() << '\n';
 
-            if (guardarArchivo("range607.txt", rango)) {
-                cout << "Resultado guardado en range607.txt\n";
+            if (guardarArchivo("out/range607.txt", rango)) {
+                cout << "Resultado guardado en out/range607.txt\n";
             }
         }
 

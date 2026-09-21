@@ -51,3 +51,7 @@ El rango incluye las fechas inicial y final. Cuando existen timestamps duplicado
 ## Uso de inteligencia artificial
 
 Más que nada la utilizé para revisar un problema que tuve con el algoritmo de quick sort. No permití que se metiera con otras partes del código, también me ayudó a crear este README. 
+
+## Casos de pruebas
+
+En la carpeta docs/, hay dos archivos diferentes, está Casos de pruebas.pdf, en este se ven algunas pruebas generales y las pruebas a la búsqueda binaria, al igual de explicaciones. Además, está el archivo ReportePruebas.md, que se apoya con la carpeta evidencias_pruebas. En este se encuentran los 14 casos de algoritmos probados (dos archivos por cada uno de los 7 algoritmos) en imágenes y en el archvio ReportePruebas.md un reporte de lo que observé. Esto lo hice para ordenar mejor y no tener un archivo con 14 imágenes, que no se ve tan bien como este directorio con las imaǵenes. 

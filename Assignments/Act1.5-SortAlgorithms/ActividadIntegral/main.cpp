@@ -368,6 +368,120 @@ void mostrarAlgoritmos() {
     }
 }
 
+bool convertirFechaIngresada(const string &texto, long long &clave) {
+    istringstream entrada(texto);
+    string mesTexto;
+    string horaTexto;
+    string contenidoExtra;
+    int dia;
+    int anio;
+
+    if (!(entrada >> mesTexto >> dia >> anio >> horaTexto) ||
+        (entrada >> contenidoExtra)) {
+        return false;
+    }
+
+    int mes = numeroMes(mesTexto);
+    int hora;
+    int minuto;
+    int segundo;
+    char primerSeparador;
+    char segundoSeparador;
+    char caracterExtra;
+    istringstream entradaHora(horaTexto);
+
+    if (mes == 0 ||
+        !(entradaHora >> hora >> primerSeparador >> minuto
+                      >> segundoSeparador >> segundo) ||
+        (entradaHora >> caracterExtra) ||
+        primerSeparador != ':' || segundoSeparador != ':' ||
+        dia < 1 || dia > 31 ||
+        hora < 0 || hora > 23 ||
+        minuto < 0 || minuto > 59 ||
+        segundo < 0 || segundo > 59) {
+        return false;
+    }
+
+    clave = crearClaveFecha(anio, mes, dia, hora, minuto, segundo);
+    return true;
+}
+
+long long leerFechaHora(const string &tipoLimite) {
+    string texto;
+    long long clave;
+
+    while (true) {
+        cout << "Fecha y hora de " << tipoLimite
+             << " (formato: Sep 08 2024 14:37:38): ";
+        getline(cin, texto);
+
+        if (convertirFechaIngresada(texto, clave)) {
+            return clave;
+        }
+
+        cout << "Formato invalido. Usa un mes en ingles y el formato indicado.\n";
+    }
+}
+
+size_t buscarPrimerMayorIgual(
+    const vector<Registro> &registros,
+    long long limite
+) {
+    size_t izquierda = 0;
+    size_t derecha = registros.size();
+
+    while (izquierda < derecha) {
+        size_t mitad = izquierda + (derecha - izquierda) / 2;
+
+        if (registros[mitad].fechaHora < limite) {
+            izquierda = mitad + 1;
+        } else {
+            derecha = mitad;
+        }
+    }
+
+    return izquierda;
+}
+
+size_t buscarPrimerMayor(
+    const vector<Registro> &registros,
+    long long limite
+) {
+    size_t izquierda = 0;
+    size_t derecha = registros.size();
+
+    while (izquierda < derecha) {
+        size_t mitad = izquierda + (derecha - izquierda) / 2;
+
+        if (registros[mitad].fechaHora <= limite) {
+            izquierda = mitad + 1;
+        } else {
+            derecha = mitad;
+        }
+    }
+
+    return izquierda;
+}
+
+vector<Registro> seleccionarRango(
+    const vector<Registro> &registros,
+    long long fechaInicio,
+    long long fechaFin
+) {
+
+    size_t inicio = buscarPrimerMayorIgual(registros, fechaInicio);
+    size_t finExclusivo = buscarPrimerMayor(registros, fechaFin);
+
+    if (inicio >= finExclusivo) {
+        return {};
+    }
+
+    return vector<Registro>(
+        registros.begin() + inicio,
+        registros.begin() + finExclusivo
+    );
+}
+
 int main() {
     char repetir = 's';
 
@@ -437,6 +551,51 @@ int main() {
 
             if (guardarArchivo("output608.txt", ordenados)) {
                 cout << "Resultado guardado en output608.txt\n";
+            }
+
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            cout << "\n===== BUSQUEDA POR RANGO =====\n"
+                 << "El rango es inclusivo: se consideran tanto la fecha de "
+                 << "inicio como la fecha de fin.\n"
+                 << "Si un limite coincide con timestamps duplicados, se "
+                 << "incluyen todos una sola vez.\n";
+
+            long long fechaInicio;
+            long long fechaFin;
+
+            while (true) {
+                fechaInicio = leerFechaHora("inicio");
+                fechaFin = leerFechaHora("fin");
+
+                if (fechaInicio <= fechaFin) {
+                    break;
+                }
+
+                cout << "La fecha de inicio no puede ser posterior a la fecha "
+                     << "de fin. Intenta nuevamente.\n";
+            }
+
+            vector<Registro> rango = seleccionarRango(
+                ordenados,
+                fechaInicio,
+                fechaFin
+            );
+
+            cout << "\n===== REGISTROS EN EL RANGO =====\n";
+
+            if (rango.empty()) {
+                cout << "No se encontraron registros en ese rango.\n";
+            } else {
+                for (const Registro &registro : rango) {
+                    cout << registro.lineaOriginal << '\n';
+                }
+            }
+
+            cout << "Total de registros encontrados: " << rango.size() << '\n';
+
+            if (guardarArchivo("range607.txt", rango)) {
+                cout << "Resultado guardado en range607.txt\n";
             }
         }
 

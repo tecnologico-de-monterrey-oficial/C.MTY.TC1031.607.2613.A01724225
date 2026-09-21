@@ -1,4 +1,6 @@
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,6 +23,112 @@ struct Registro {
         return fechaHora <= otro.fechaHora;
     }
 };
+
+int numeroMes(const string &mes) {
+    if (mes == "Jan") return 1;
+    if (mes == "Feb") return 2;
+    if (mes == "Mar") return 3;
+    if (mes == "Apr") return 4;
+    if (mes == "May") return 5;
+    if (mes == "Jun") return 6;
+    if (mes == "Jul") return 7;
+    if (mes == "Aug") return 8;
+    if (mes == "Sep") return 9;
+    if (mes == "Oct") return 10;
+    if (mes == "Nov") return 11;
+    if (mes == "Dec") return 12;
+
+    return 0;
+}
+
+long long crearClaveFecha(
+    int anio,
+    int mes,
+    int dia,
+    int hora,
+    int minuto,
+    int segundo
+) {
+    long long clave = anio;
+
+    clave = clave * 100 + mes;
+    clave = clave * 100 + dia;
+    clave = clave * 100 + hora;
+    clave = clave * 100 + minuto;
+    clave = clave * 100 + segundo;
+
+    return clave;
+}
+
+vector<Registro> leerArchivo(const string &nombreArchivo) {
+    ifstream archivo(nombreArchivo);
+    vector<Registro> registros;
+
+    if (!archivo.is_open()) {
+        cout << "No se pudo abrir el archivo: " << nombreArchivo << '\n';
+        return registros;
+    }
+
+    string linea;
+
+    while (getline(archivo, linea)) {
+        if (linea.empty()) {
+            continue;
+        }
+
+        istringstream entrada(linea);
+        string mesTexto;
+        string horaTexto;
+        int dia;
+        int anio;
+
+        entrada >> mesTexto >> dia >> anio >> horaTexto;
+
+        int mes = numeroMes(mesTexto);
+
+        if (entrada.fail() || mes == 0 || horaTexto.size() != 8) {
+            cout << "Linea invalida: " << linea << '\n';
+            continue;
+        }
+
+        int hora = stoi(horaTexto.substr(0, 2));
+        int minuto = stoi(horaTexto.substr(3, 2));
+        int segundo = stoi(horaTexto.substr(6, 2));
+
+        Registro registro;
+        registro.fechaHora = crearClaveFecha(
+            anio,
+            mes,
+            dia,
+            hora,
+            minuto,
+            segundo
+        );
+        registro.lineaOriginal = linea;
+
+        registros.push_back(registro);
+    }
+
+    return registros;
+}
+
+bool guardarArchivo(
+    const string &nombreArchivo,
+    const vector<Registro> &registros
+) {
+    ofstream archivo(nombreArchivo);
+
+    if (!archivo.is_open()) {
+        cout << "No se pudo crear el archivo: " << nombreArchivo << '\n';
+        return false;
+    }
+
+    for (const Registro &registro : registros) {
+        archivo << registro.lineaOriginal << '\n';
+    }
+
+    return true;
+}
 
 template <typename T>
 vector<T> swapSort(vector<T> v) {

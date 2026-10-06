@@ -1,76 +1,114 @@
-#include <iostream> 
+#include <iostream>
+#include <string>
 
+template <typename T>
 class Node {
-    public: 
-        Node (int value, Node* next) {
-            m_next = next; 
-            m_value = value; 
+    public:
+        Node(T value, Node* next) {
+            m_next = next;
+            m_value = value;
         }
 
-        int m_value; 
-        Node* m_next;   
-}; 
+        T m_value;
+        Node* m_next;
+};
 
-
+template <typename T>
 class Queue {
-    public: 
+    public:
         Queue() {
-            m_head = nullptr; 
+            m_head = nullptr;
+            m_tail = nullptr;
+            m_size = 0;
+        }
+
+        ~Queue() {
+            while (!empty()) {
+                pop();
+            }
         }
 
         void pop() {
-            // remove the head
             if (m_head == nullptr) {
-                return; 
+                return;
             }
-            Node* old_head = m_head; 
-            m_head = old_head->m_next; 
-            delete old_head; 
-        }
-
-        void add(int value) {
-            // add to tail 
+            Node<T>* old_head = m_head;
+            m_head = old_head->m_next;
             if (m_head == nullptr) {
-                m_head = new Node(value, nullptr); 
-                return; 
-
+                m_tail = nullptr;
             }
-
-            Node* aux = m_head; 
-            while (aux->m_next != nullptr) {
-                aux = aux->m_next; 
-            }
-
-            aux->m_next = new Node(value, nullptr); 
-
+            delete old_head;
+            m_size--;
         }
 
-        Node* front() {
-            return m_head; 
-        }
-
-        void print() {
-            Node* cur = m_head; 
-
-            while (cur != nullptr) {
-                std::cout << cur->m_value << ", "; 
-                cur = cur->m_next; 
-                
+        void add(T value) {
+            Node<T>* node = new Node<T>(value, nullptr);
+            if (m_head == nullptr) {
+                m_head = node;
+            } else {
+                m_tail->m_next = node;
             }
+            m_tail = node;
+            m_size++;
         }
 
+        T& front() {
+            return m_head->m_value;
+        }
 
+        bool empty() {
+            return m_head == nullptr;
+        }
 
-    private: 
-        Node* m_head; 
+        int size() {
+            return m_size;
+        }
 
+    private:
+        Node<T>* m_head;
+        Node<T>* m_tail;
+        int m_size;
+};
 
+struct Cliente {
+    std::string nombre;
+    int boletos;
+};
 
-}; 
+int main() {
+    Queue<Cliente> fila;
+    int opcion = 0;
 
-int main(){
+    while (opcion != 5) {
+        std::cout << "\n1. Llegada de un nuevo cliente\n"
+                  << "2. Atender al siguiente cliente\n"
+                  << "3. Ver al siguiente cliente\n"
+                  << "4. Personas en la fila\n"
+                  << "5. Salir\n"
+                  << "Opcion: ";
+        std::cin >> opcion;
 
+        if (opcion == 1) {
+            Cliente c;
+            std::cout << "Nombre: ";
+            std::cin >> c.nombre;
+            std::cout << "Boletos: ";
+            std::cin >> c.boletos;
+            fila.add(c);
+        } else if (opcion == 2 || opcion == 3) {
+            if (fila.empty()) {
+                std::cout << "La fila esta vacia\n";
+                continue;
+            }
+            Cliente c = fila.front();
+            std::cout << c.nombre << " pidio " << c.boletos << " boletos\n";
+            if (opcion == 2) {
+                fila.pop();
+            }
+        } else if (opcion == 4) {
+            std::cout << "Hay " << fila.size() << " personas en la fila\n";
+        }
+    }
 
-
-    return 0; 
+    return 0;
 }

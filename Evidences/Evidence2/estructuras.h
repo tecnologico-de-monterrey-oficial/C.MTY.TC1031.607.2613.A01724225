@@ -129,6 +129,53 @@ public:
     Node* getHead() const { return head; }
     Node* getTail() const { return tail; }
     int size() const { return n; }
+
+    // Revisa si ya esta ordenada segun less (estable: iguales cuentan como ordenados)
+    template <typename Less>
+    bool isSorted(Less less) const {
+        for (Node* p = head; p && p->next; p = p->next)
+            if (less(p->next->v, p->v)) return false;
+        return true;
+    }
+
+    // Merge Sort sobre los mismos nodos (solo se reenlazan, no se copia nada).
+    // comps cuenta comparaciones; maxDepth la profundidad maxima de recursion.
+    template <typename Less>
+    void mergeSort(Less less, long long& comps, int& maxDepth) {
+        comps = 0;
+        maxDepth = 0;
+        head = msort(head, less, comps, 1, maxDepth);
+        Node* prev = nullptr;
+        for (Node* p = head; p; p = p->next) { p->prev = prev; prev = p; }
+        tail = prev;
+    }
+
+private:
+    template <typename Less>
+    static Node* msort(Node* h, Less& less, long long& comps, int depth, int& maxDepth) {
+        if (depth > maxDepth) maxDepth = depth;
+        if (!h || !h->next) return h;
+        // mitad: slow termina al final de la primera mitad
+        Node *slow = h, *fast = h->next;
+        while (fast && fast->next) { slow = slow->next; fast = fast->next->next; }
+        Node* right = slow->next;
+        slow->next = nullptr;
+        Node* a = msort(h, less, comps, depth + 1, maxDepth);
+        Node* b = msort(right, less, comps, depth + 1, maxDepth);
+
+        Node dummy{T(), nullptr, nullptr};
+        Node* t = &dummy;
+        while (a && b) {
+            comps++;
+            if (less(b->v, a->v)) { t->next = b; b = b->next; }  // empate: sale a (estable)
+            else                  { t->next = a; a = a->next; }
+            t = t->next;
+        }
+        t->next = a ? a : b;
+        return dummy.next;
+    }
+
+public:
     void printForward() const {
         std::cout << "Adelante: [";
         for (Node* p = head; p; p = p->next) std::cout << p->v << (p->next ? ", " : "");

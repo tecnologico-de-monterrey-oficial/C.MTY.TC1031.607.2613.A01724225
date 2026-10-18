@@ -91,10 +91,32 @@ void pruebaDoble() {
     assert(d.size() == 2);
 }
 
+void pruebaOrden() {
+    titulo("Merge Sort en lista doble");
+    DoublyLinkedList<int> d;
+    auto less = [](int a, int b) { return a < b; };
+    long long c; int prof;
+    d.mergeSort(less, c, prof);                  // vacia
+    assert(d.size() == 0 && !d.getHead() && !d.getTail());
+    d.addFirst(7);
+    d.mergeSort(less, c, prof);                  // un elemento
+    assert(d.getHead() == d.getTail() && c == 0);
+    int v[] = {5, 3, 9, 1, 3, 8, 2, 7};
+    for (int x : v) d.addLast(x);
+    cout << "Antes: "; d.printForward();
+    assert(!d.isSorted(less));
+    d.mergeSort(less, c, prof);
+    cout << "Despues: "; d.printForward(); d.printBackward();
+    cout << "comparaciones = " << c << ", profundidad = " << prof << "\n";
+    assert(d.isSorted(less) && d.getTail()->v == 9 && d.getHead()->v == 1);
+    for (auto* p = d.getHead(); p->next; p = p->next) assert(p->next->prev == p);
+}
+
 int main() {
     pruebaLista();
     pruebaPila();
     pruebaFila();
     pruebaDoble();
+    pruebaOrden();
     cout << "\nTodas las pruebas pasaron\n";
 }

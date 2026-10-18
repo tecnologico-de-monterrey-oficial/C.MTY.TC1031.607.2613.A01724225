@@ -1,5 +1,8 @@
 #include <cassert>
-#include "estructuras.h"
+#include "LinkedList.h"
+#include "Stack.h"
+#include "Queue.h"
+#include "DoublyLinkedList.h"
 using namespace std;
 
 void titulo(const char* t) { cout << "\n=== " << t << " ===\n"; }

@@ -1,10 +1,13 @@
 #include <chrono>
 #include <cmath>
+#include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <map>
-#include "estructuras.h"
-#include "registro.h"
+#include "Queue.h"
+#include "Stack.h"
+#include "DoublyLinkedList.h"
+#include "Registro.h"
 using namespace std;
 
 struct Linea { int num; string texto; };
@@ -14,6 +17,7 @@ ostream& operator<<(ostream& o, const Linea& l) { return o << l.texto; }
 // Regresa false si el archivo no se pudo abrir.
 bool cargar(const string& archivo, DoublyLinkedList<Registro>& lista, int& omitidas) {
     ifstream f(archivo);
+    if (!f) f.open("data/" + archivo);  // tambien busca en la carpeta data/
     if (!f) return false;
 
     Queue<Linea> fila;
@@ -77,6 +81,7 @@ long long pedirDia() {
 }
 
 void escribirSalida(const Lista& lista, const string& nombre) {
+    filesystem::create_directories(filesystem::path(nombre).parent_path());
     ofstream out(nombre);
     for (auto* p = lista.getHead(); p; p = p->next) out << p->v.original << "\n";
 }
@@ -98,7 +103,7 @@ void ordenar(Lista& lista, const string& archivo, bool& ordenada) {
     lista.mergeSort(menorFecha, comps, prof);
     double ms = chrono::duration<double, milli>(chrono::steady_clock::now() - t0).count();
     ordenada = true;
-    escribirSalida(lista, "output608.out");
+    escribirSalida(lista, "out/output608.out");
 
     double n = lista.size();
     double nlogn = n * log2(n);
@@ -115,7 +120,7 @@ void ordenar(Lista& lista, const string& archivo, bool& ordenada) {
          << "Profundidad maxima:   " << prof << "\n"
          << "Crecimiento real:     ~ " << (real == 1 ? "n log n" : "n^2") << "\n"
          << "Tu prediccion:        " << (pred == real ? "COINCIDIO" : "NO coincidio") << "\n"
-         << "Datos ordenados guardados en output608.out\n";
+         << "Datos ordenados guardados en out/output608.out\n";
 }
 
 // Recorre la lista ordenada y llama accion(registro) por cada registro del dia.

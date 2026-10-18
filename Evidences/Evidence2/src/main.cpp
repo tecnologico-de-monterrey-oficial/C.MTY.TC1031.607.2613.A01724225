@@ -4,10 +4,10 @@
 #include <fstream>
 #include <iomanip>
 #include <map>
-#include "Queue.h"
-#include "Stack.h"
-#include "DoublyLinkedList.h"
-#include "Registro.h"
+#include "../include/Queue.h"
+#include "../include/Stack.h"
+#include "../include/DoublyLinkedList.h"
+#include "../include/Registro.h"
 using namespace std;
 
 struct Linea { int num; string texto; };
@@ -103,7 +103,7 @@ void ordenar(Lista& lista, const string& archivo, bool& ordenada) {
     lista.mergeSort(menorFecha, comps, prof);
     double ms = chrono::duration<double, milli>(chrono::steady_clock::now() - t0).count();
     ordenada = true;
-    escribirSalida(lista, "out/output608.out");
+    escribirSalida(lista, "out/output607.out");
 
     double n = lista.size();
     double nlogn = n * log2(n);
@@ -120,7 +120,7 @@ void ordenar(Lista& lista, const string& archivo, bool& ordenada) {
          << "Profundidad maxima:   " << prof << "\n"
          << "Crecimiento real:     ~ " << (real == 1 ? "n log n" : "n^2") << "\n"
          << "Tu prediccion:        " << (pred == real ? "COINCIDIO" : "NO coincidio") << "\n"
-         << "Datos ordenados guardados en out/output608.out\n";
+         << "Datos ordenados guardados en out/output607.out\n";
 }
 
 // Recorre la lista ordenada y llama accion(registro) por cada registro del dia.
@@ -205,7 +205,7 @@ int main() {
     int omitidas = 0;
 
     while (true) {
-        if (!leerLinea("Archivo a cargar (log608-1.txt / log608-2.txt): ", archivo)) return 0;
+        if (!leerLinea("Archivo a cargar (log607-1.txt / log607-2.txt): ", archivo)) return 0;
         if (archivo.empty()) { cout << "Escribe el nombre del archivo.\n"; continue; }
         if (cargar(archivo, lista, omitidas)) break;
         cout << "No se pudo abrir '" << archivo << "'. Intenta de nuevo.\n";

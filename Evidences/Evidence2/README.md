@@ -11,7 +11,7 @@ Programa en C++ que carga una bitácora de eventos, la ordena por fecha y hora c
 ├── src/       main.cpp (programa principal), pruebas.cpp (pruebas de las estructuras)
 ├── include/   Node.h, LinkedList.h, Stack.h, Queue.h, DoublyLinkedList.h, Registro.h
 ├── docs/      Evidencia2.docx (documento de evidencia)
-├── out/       output608.out (lo genera el programa)
+├── out/       output607.out (lo genera el programa)
 ├── build/     ejecutables compilados
 └── README.md
 ```
@@ -40,8 +40,8 @@ Desde la carpeta de este proyecto (donde está este README):
 
 ```bash
 mkdir -p build
-g++ -std=c++17 -I include src/main.cpp -o build/main
-g++ -std=c++17 -I include src/pruebas.cpp -o build/pruebas
+g++ -std=c++17 src/main.cpp -o build/main
+g++ -std=c++17 src/pruebas.cpp -o build/pruebas
 ```
 
 Opcional, para ver advertencias: agrega `-Wall -Wextra` a los comandos.
@@ -68,7 +68,7 @@ Ejecuta siempre desde la carpeta del proyecto, para que encuentre `data/` y escr
 5) Salir
 ```
 
-- **Opción 1:** pide tu predicción de crecimiento (n log n o n²), ordena y muestra algoritmo, archivo, tamaño, tiempo, comparaciones, profundidad máxima y si tu predicción coincidió. Genera `out/output608.out` con los datos ordenados. Si ya estaba ordenada, lo avisa.
+- **Opción 1:** pide tu predicción de crecimiento (n log n o n²), ordena y muestra algoritmo, archivo, tamaño, tiempo, comparaciones, profundidad máxima y si tu predicción coincidió. Genera `out/output607.out` con los datos ordenados. Si ya estaba ordenada, lo avisa.
 - **Opción 2:** pide un día con el formato `Mes dd yyyy` (por ejemplo `Sep 08 2024`) y muestra sus registros con el total. Requiere haber ordenado antes (opción 1).
 - **Opción 3:** muestra los registros de un día en orden descendente usando una Pila. Reutiliza el día de la última búsqueda, o lo pide si no hay una. Requiere haber ordenado antes.
 - **Opción 4:** total de registros, día con más incidentes, tipo de evento más frecuente e IP más repetida. Si hay empates, muestra todos.
@@ -96,13 +96,13 @@ Prueba cada estructura con estructura vacía, un solo elemento y operaciones en 
 
 ## Archivo de salida
 
-La opción 1 crea (o sobrescribe) `out/output608.out`, con los registros ordenados y en el mismo formato del archivo original.
+La opción 1 crea (o sobrescribe) `out/output607.out`, con los registros ordenados y en el mismo formato del archivo original.
 
 ## Ejemplo rápido
 
 ```bash
 mkdir -p build
-g++ -std=c++17 -I include src/main.cpp -o build/main
+g++ -std=c++17 src/main.cpp -o build/main
 ./build/main
 # Archivo a cargar: log607-2.txt
 # Opcion: 1   (ordenar)  -> Tu prediccion: 1
@@ -112,7 +112,7 @@ g++ -std=c++17 -I include src/main.cpp -o build/main
 
 ## Video explicativo
 
-Pendiente: _(agregar aquí el enlace al video)_
+[Ver video explicativo](https://drive.google.com/file/d/19AWcDi85zq2EIyaPuQnTmeTzaB8zyti_/view?usp=sharing)
 
 ## Política de uso de IA
 

@@ -1,4 +1,7 @@
+#include <chrono>
+#include <cmath>
 #include <fstream>
+#include <iomanip>
 #include "estructuras.h"
 #include "registro.h"
 using namespace std;
@@ -32,18 +35,140 @@ bool cargar(const string& archivo, DoublyLinkedList<Registro>& lista, int& omiti
     return true;
 }
 
+using Lista = DoublyLinkedList<Registro>;
+auto menorFecha = [](const Registro& a, const Registro& b) { return a.clave < b.clave; };
+
+// Lee una linea. false si se acabo la entrada
+bool leerLinea(const string& msg, string& s) {
+    cout << msg;
+    getline(cin, s);
+    return (bool)cin;
+}
+
+// Pide un entero del 1 al max. repite hasta que sea valido. -1 si se acabo la entrada
+int pedirOpcion(const string& msg, int max) {
+    string s;
+    while (leerLinea(msg, s)) {
+        if (s.empty()) { cout << "No escribiste nada.\n"; continue; }
+        if (soloDigitos(s) && s.size() < 4 && stoi(s) >= 1 && stoi(s) <= max) return stoi(s);
+        cout << "Opcion invalida: elige un numero del 1 al " << max << ".\n";
+    }
+    return -1;
+}
+
+// Pide un dia tipo "Sep 14 2024" y lo valida
+long long pedirDia() {
+    string s;
+    while (leerLinea("Dia a buscar (ej. Sep 14 2024): ", s)) {
+        istringstream in(s);
+        string m, d, a, extra;
+        in >> m >> d >> a;
+        if (s.find_first_not_of(" \t") == string::npos) { cout << "No escribiste nada.\n"; continue; }
+        string err;
+        long long dia = 0;
+        if (in.fail()) err = "usa el formato Mes dd yyyy";
+        else if (in >> extra) err = "sobran datos, usa el formato Mes dd yyyy";
+        else dia = parseDia(m, d, a, err);
+        if (dia) return dia;
+        cout << "Formato de dia invalido: " << err << ".\n";
+    }
+    return 0;
+}
+
+void escribirSalida(const Lista& lista, const string& nombre) {
+    ofstream out(nombre);
+    for (auto* p = lista.getHead(); p; p = p->next) out << p->v.original << "\n";
+}
+
+void ordenar(Lista& lista, const string& archivo, bool& ordenada) {
+    if (lista.size() == 0) { cout << "No hay registros que ordenar.\n"; return; }
+    if (ordenada || lista.isSorted(menorFecha)) {
+        ordenada = true;
+        cout << "La lista ya esta ordenada por fecha y hora; no hace falta ordenar de nuevo.\n";
+        return;
+    }
+    cout << "Prediccion del crecimiento de comparaciones:\n  1) ~ n log n\n  2) ~ n^2\n";
+    int pred = pedirOpcion("Tu prediccion: ", 2);
+    if (pred < 0) return;
+
+    long long comps;
+    int prof;
+    auto t0 = chrono::steady_clock::now();
+    lista.mergeSort(menorFecha, comps, prof);
+    double ms = chrono::duration<double, milli>(chrono::steady_clock::now() - t0).count();
+    ordenada = true;
+    escribirSalida(lista, "output608.out");
+
+    double n = lista.size();
+    double nlogn = n * log2(n);
+   
+
+    int real = comps <= 2 * nlogn ? 1 : 2;
+    cout << fixed << setprecision(3)
+         << "\n--- Resultado ---\n"
+         << "Algoritmo:            Merge Sort (sobre la lista doblemente ligada)\n"
+         << "Archivo:              " << archivo << "\n"
+         << "Tamano de los datos:  " << lista.size() << " registros\n"
+         << "Tiempo:               " << ms << " ms\n"
+         << "Comparaciones:        " << comps << "  (n log2 n = " << (long long)nlogn << ", n^2 = " << (long long)(n * n) << ")\n"
+         << "Profundidad maxima:   " << prof << "\n"
+         << "Crecimiento real:     ~ " << (real == 1 ? "n log n" : "n^2") << "\n"
+         << "Tu prediccion:        " << (pred == real ? "COINCIDIO" : "NO coincidio") << "\n"
+         << "Datos ordenados guardados en output608.out\n";
+}
+
+// Recorre la lista ordenada y llama accion(registro) por cada registro del dia.
+// Se detiene en cuanto pasas del dia buscado. Regresa cuantos encontro.
+template <typename F>
+int recorrerDia(const Lista& lista, long long dia, F accion) {
+    int total = 0;
+    for (auto* p = lista.getHead(); p; p = p->next) {
+        if (p->v.dia() < dia) continue;
+        if (p->v.dia() > dia) break;
+        accion(p->v);
+        total++;
+    }
+    return total;
+}
+
+void buscarDia(const Lista& lista, bool ordenada, long long& ultimoDia) {
+    if (!ordenada) { cout << "La lista aun no esta ordenada. Primero usa la opcion 1.\n"; return; }
+    long long dia = pedirDia();
+    if (!dia) return;
+    ultimoDia = dia;
+    cout << "\n";
+    int total = recorrerDia(lista, dia, [](const Registro& r) { cout << r << "\n"; });
+    if (total == 0) cout << "No hay registros para ese dia.\n";
+    else cout << "\nTotal encontrado: " << total << "\n";
+}
+
 int main() {
-    DoublyLinkedList<Registro> lista;
+    Lista lista;
     string archivo;
     int omitidas = 0;
 
     while (true) {
-        cout << "Archivo a cargar (log608-1.txt / log608-2.txt): ";
-        getline(cin, archivo);
-        if (!cin) return 0;
+        if (!leerLinea("Archivo a cargar (log608-1.txt / log608-2.txt): ", archivo)) return 0;
         if (archivo.empty()) { cout << "Escribe el nombre del archivo.\n"; continue; }
         if (cargar(archivo, lista, omitidas)) break;
         cout << "No se pudo abrir '" << archivo << "'. Intenta de nuevo.\n";
     }
     cout << "Registros cargados: " << lista.size() << "\nLineas omitidas: " << omitidas << "\n";
+
+    bool ordenada = false;
+    long long ultimoDia = 0;  // lo usaran las opciones 3 y 4
+    while (true) {
+        cout << "\n===== MENU =====\n"
+                "1) Ordenar por fecha y hora\n"
+                "2) Buscar logs por dia\n"
+                "3) Mostrar logs por dia en orden descendente\n"
+                "4) Estadisticas del archivo\n"
+                "5) Salir\n";
+        int op = pedirOpcion("Opcion: ", 5);
+        if (op < 0 || op == 5) break;
+        if (op == 1) ordenar(lista, archivo, ordenada);
+        else if (op == 2) buscarDia(lista, ordenada, ultimoDia);
+        else cout << "Esta opcion aun no esta implementada.\n";
+    }
+    cout << "Hasta luego.\n";
 }

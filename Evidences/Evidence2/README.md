@@ -1,7 +1,5 @@
 # Evidencia 2: Bitácora con estructuras de datos propias
-
-Programa en C++ que carga una bitácora de eventos, la ordena por fecha y hora con Merge Sort sobre una lista doblemente ligada, y permite buscar por día y ver estadísticas.
-
+ * Utilizé IA en este archivo
 ## Archivos
 
 | Archivo | Qué es |
@@ -13,12 +11,6 @@ Programa en C++ que carga una bitácora de eventos, la ordena por fecha y hora c
 | `log607-1.txt`, `log607-2.txt` | Archivos de datos de ejemplo |
 | `Documento_Evidencia.md` | Documento de evidencia |
 
-## Requisitos
-
-- Un compilador de C++ con soporte para C++17 (`g++` 7 o superior, o `clang++`).
-- No se necesitan librerías externas.
-
-En Ubuntu/Debian, si no tienes `g++`: `sudo apt install g++`.
 
 ## Compilar
 

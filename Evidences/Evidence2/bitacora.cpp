@@ -2,6 +2,7 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+#include <map>
 #include "estructuras.h"
 #include "registro.h"
 using namespace std;
@@ -142,6 +143,57 @@ void buscarDia(const Lista& lista, bool ordenada, long long& ultimoDia) {
     else cout << "\nTotal encontrado: " << total << "\n";
 }
 
+// yyyymmdd -> "Sep 08 2024"
+string formatoDia(long long d) {
+    ostringstream o;
+    o << MESES[(d / 100 % 100) - 1] << " " << setfill('0') << setw(2) << d % 100 << " " << d / 10000;
+    return o.str();
+}
+
+// Usa una Pila para invertir: push al recorrer (ascendente), pop al mostrar (descendente)
+void mostrarDescendente(const Lista& lista, bool ordenada, long long& ultimoDia) {
+    if (!ordenada) { cout << "La lista aun no esta ordenada. Primero usa la opcion 1.\n"; return; }
+    if (!ultimoDia) {
+        cout << "Aun no has buscado ningun dia, indica cual quieres ver.\n";
+        ultimoDia = pedirDia();
+        if (!ultimoDia) return;
+    } else {
+        cout << "Dia de la ultima busqueda: " << formatoDia(ultimoDia) << "\n";
+    }
+    Stack<Registro> pila;
+    recorrerDia(lista, ultimoDia, [&](const Registro& r) { pila.push(r); });
+    if (pila.isEmpty()) { cout << "No hay registros para ese dia.\n"; return; }
+    int total = pila.size();
+    cout << "\n";
+    while (!pila.isEmpty()) { cout << *pila.peek() << "\n"; pila.pop(); }
+    cout << "\nTotal mostrado: " << total << " (orden descendente)\n";
+}
+
+// Imprime la(s) llave(s) con mas apariciones; si hay empate, todas
+template <typename K, typename Fmt>
+void maximos(const string& titulo, const map<K, int>& cuenta, Fmt fmt) {
+    int max = 0;
+    for (auto& kv : cuenta) max = std::max(max, kv.second);
+    cout << titulo << (max ? "" : ": -") << "\n";
+    for (auto& kv : cuenta)
+        if (kv.second == max) cout << "    " << fmt(kv.first) << "  (" << max << " apariciones)\n";
+}
+
+void estadisticas(const Lista& lista) {
+    if (lista.size() == 0) { cout << "No hay registros para calcular estadisticas.\n"; return; }
+    map<long long, int> dias;
+    map<string, int> eventos, ips;
+    for (auto* p = lista.getHead(); p; p = p->next) {
+        dias[p->v.dia()]++;
+        eventos[p->v.desc]++;
+        ips[p->v.ip]++;
+    }
+    cout << "\n--- Estadisticas ---\nTotal de registros: " << lista.size() << "\n";
+    maximos("Dia(s) con mas incidentes:", dias, formatoDia);
+    maximos("Tipo(s) de evento mas frecuente(s):", eventos, [](const string& s) { return s; });
+    maximos("Direccion(es) IP que mas aparece(n):", ips, [](const string& s) { return s; });
+}
+
 int main() {
     Lista lista;
     string archivo;
@@ -156,7 +208,7 @@ int main() {
     cout << "Registros cargados: " << lista.size() << "\nLineas omitidas: " << omitidas << "\n";
 
     bool ordenada = false;
-    long long ultimoDia = 0;  // lo usaran las opciones 3 y 4
+    long long ultimoDia = 0;  // dia de la ultima busqueda, lo reutiliza la opcion 3
     while (true) {
         cout << "\n===== MENU =====\n"
                 "1) Ordenar por fecha y hora\n"
@@ -168,7 +220,8 @@ int main() {
         if (op < 0 || op == 5) break;
         if (op == 1) ordenar(lista, archivo, ordenada);
         else if (op == 2) buscarDia(lista, ordenada, ultimoDia);
-        else cout << "Esta opcion aun no esta implementada.\n";
+        else if (op == 3) mostrarDescendente(lista, ordenada, ultimoDia);
+        else estadisticas(lista);
     }
     cout << "Hasta luego.\n";
 }

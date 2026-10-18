@@ -15,9 +15,10 @@ struct Registro {
 
 inline std::ostream& operator<<(std::ostream& o, const Registro& r) { return o << r.original; }
 
+inline const char* const MESES[12] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+
 inline int numeroMes(const std::string& m) {
-    static const char* meses[] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-    for (int i = 0; i < 12; i++) if (m == meses[i]) return i + 1;
+    for (int i = 0; i < 12; i++) if (m == MESES[i]) return i + 1;
     return 0;
 }
 

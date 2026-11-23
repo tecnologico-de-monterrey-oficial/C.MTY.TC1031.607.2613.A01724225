@@ -143,6 +143,53 @@ void ordenar(const vector<Registro>& registros, const string& nombreHeap, const 
          << "Archivo generado:   out/" << salida << "\n";
 }
 
+struct Conteo {
+    IP ip;
+    int veces = 0;
+};
+
+// para el top: gana la que tiene mas registros y si empatan la ip menor
+struct MasRegistros {
+    bool operator()(const Conteo& a, const Conteo& b) const {
+        if (a.veces != b.veces) return a.veces > b.veces;
+        return a.ip < b.ip;
+    }
+};
+
+void top10(const BST<IP>& ips) {
+    if (ips.empty()) { cout << "No hay IPs cargadas.\n"; return; }
+
+    Heap<Conteo, MasRegistros> h;
+    ips.inorden([&h](const IP& ip, int veces) { h.push({ip, veces}); });
+
+    cout << "\n--- Top 10 de IPs con mas registros ---\n"
+         << left << setw(7) << "Lugar" << setw(18) << "IP" << "Registros\n";
+    int lugar = 0, ultimo = 0;
+    while (lugar < 10 && !h.empty()) {
+        Conteo c = h.top();
+        h.pop();
+        lugar++;
+        ultimo = c.veces;
+        cout << left << setw(7) << lugar << setw(18) << c.ip.texto << c.veces << "\n";
+    }
+    cout << right;
+
+    // las que siguen con el mismo numero que el lugar diez quedaron fuera por el desempate
+    vector<string> empatadas;
+    while (lugar == 10 && !h.empty() && h.top().veces == ultimo) {
+        empatadas.push_back(h.top().ip.texto);
+        h.pop();
+    }
+    if (!empatadas.empty()) {
+        bool una = empatadas.size() == 1;
+        cout << "\nHay " << empatadas.size() << (una ? " IP mas" : " IPs mas") << " con " << ultimo
+             << " registros, " << (una ? "empatada" : "empatadas") << " con el lugar 10:";
+        for (const string& s : empatadas) cout << " " << s;
+        cout << "\nQuedo fuera por tener la IP mayor; en un empate va primero la IP menor.\n";
+    }
+    if (lugar < 10) cout << "\nSolo hay " << lugar << " IPs distintas en el archivo.\n";
+}
+
 int main() {
     vector<Registro> registros;
     BST<IP> ips;
@@ -174,6 +221,7 @@ int main() {
         try {
             if (op == 1) ordenar<greater<Registro>>(registros, "MaxHeap", "de mayor a menor", "output608-1.out");
             else if (op == 2) ordenar<less<Registro>>(registros, "MinHeap", "de menor a mayor", "output608-2.out");
+            else if (op == 3) top10(ips);
         } catch (const exception& e) {
             cout << "Ocurrio un error: " << e.what() << ". Intenta de nuevo.\n";
         }

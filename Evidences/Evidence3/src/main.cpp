@@ -69,6 +69,80 @@ int pedirOpcion(const string& msg, int max) {
     return -1;
 }
 
+// mete los primeros n registros al heap y los saca uno por uno
+// deja en altura lo alto que quedo el heap con todos adentro
+template <typename Comp>
+long long ordenarConHeap(const vector<Registro>& registros, size_t n, vector<Registro>* salida, int& altura) {
+    Heap<Registro, Comp> h;
+    for (size_t i = 0; i < n; i++) h.push(registros[i]);
+    altura = h.height();
+    while (!h.empty()) {
+        if (salida) salida->push_back(h.top());
+        h.pop();
+    }
+    return h.getComparaciones();
+}
+
+const char* PREDICCIONES[4] = {
+    "aproximadamente igual",
+    "aproximadamente el doble",
+    "un poco mas del doble",
+    "aproximadamente el cuadruple",
+};
+
+// decide en que opcion cae la razon entre las comparaciones con n y con la mitad
+int clasificar(double razon) {
+    if (razon < 1.5) return 1;
+    if (razon < 2.05) return 2;
+    if (razon < 3.0) return 3;
+    return 4;
+}
+
+template <typename Comp>
+void ordenar(const vector<Registro>& registros, const string& nombreHeap, const string& sentido, const string& salida) {
+    if (registros.size() < 2) { cout << "Se necesitan al menos 2 registros para ordenar.\n"; return; }
+
+    cout << "\nPrediccion: si el archivo tuviera el doble de registros, el numero de comparaciones seria...\n";
+    for (int i = 0; i < 4; i++) cout << "  " << i + 1 << ") " << PREDICCIONES[i] << "\n";
+    int pred = pedirOpcion("Tu prediccion: ", 4);
+    if (pred < 0) return;
+
+    vector<Registro> ordenados;
+    ordenados.reserve(registros.size());
+    int altura = 0;
+    auto t0 = chrono::steady_clock::now();
+    long long comps = ordenarConHeap<Comp>(registros, registros.size(), &ordenados, altura);
+    double ms = chrono::duration<double, milli>(chrono::steady_clock::now() - t0).count();
+
+    // no hay un archivo del doble, asi que se ordena la mitad y se compara contra todo
+    // es la misma proporcion que pasar de n al doble de n
+    int alturaMitad = 0;
+    size_t mitad = registros.size() / 2;
+    long long compsMitad = ordenarConHeap<Comp>(registros, mitad, nullptr, alturaMitad);
+    double razon = (double)comps / compsMitad;
+    int real = clasificar(razon);
+
+    filesystem::create_directories("out");
+    ofstream out("out/" + salida);
+    for (const Registro& r : ordenados) out << r << "\n";
+    out.close();
+
+    double n = registros.size();
+    cout << fixed << setprecision(3)
+         << "\n--- Resultado ---\n"
+         << "Algoritmo:          Heap Sort con " << nombreHeap << ", " << sentido << "\n"
+         << "Registros:          " << registros.size() << "\n"
+         << "Tiempo:             " << ms << " ms\n"
+         << "Comparaciones:      " << comps << "  (n log2 n = " << (long long)(n * log2(n)) << ")\n"
+         << "Altura del heap:    " << altura << " niveles con todos los registros\n"
+         << setprecision(2)
+         << "Prueba con la mitad: " << mitad << " registros, " << compsMitad << " comparaciones\n"
+         << "Al duplicar n las comparaciones crecen x" << razon << ", o sea " << PREDICCIONES[real - 1] << "\n"
+         << "Tu prediccion:      " << PREDICCIONES[pred - 1] << " -> "
+         << (pred == real ? "COINCIDIO" : "NO coincidio") << "\n"
+         << "Archivo generado:   out/" << salida << "\n";
+}
+
 int main() {
     vector<Registro> registros;
     BST<IP> ips;
@@ -95,6 +169,13 @@ int main() {
                 "5) Salir\n";
         int op = pedirOpcion("Opcion: ", 5);
         if (op < 0 || op == 5) break;
+
+        // si algo truena se avisa y se regresa al menu en lugar de cerrar el programa
+        try {
+            if (op == 1) ordenar<greater<Registro>>(registros, "MaxHeap", "de mayor a menor", "output608-1.out");
+        } catch (const exception& e) {
+            cout << "Ocurrio un error: " << e.what() << ". Intenta de nuevo.\n";
+        }
     }
     cout << "Hasta luego.\n";
 }

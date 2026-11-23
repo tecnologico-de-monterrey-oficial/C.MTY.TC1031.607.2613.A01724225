@@ -190,6 +190,33 @@ void top10(const BST<IP>& ips) {
     if (lugar < 10) cout << "\nSolo hay " << lugar << " IPs distintas en el archivo.\n";
 }
 
+void buscarIP(const BST<IP>& ips) {
+    string s, err;
+    while (true) {
+        if (!leerLinea("IP a buscar (ej. 10.14.0.9): ", s)) return;
+        s = recortar(s);
+        if (s.empty()) { cout << "No escribiste nada.\n"; continue; }
+        if (ipValida(s, err)) break;
+        cout << "IP mal escrita: " << err << ".\n";
+    }
+
+    Busqueda b = ips.search(IP(s));
+    int n = ips.size();
+    int minimo = n > 0 ? (int)ceil(log2(n)) : 0;
+
+    cout << "\n";
+    if (b.contador > 0) cout << "La IP " << s << " aparece " << b.contador << (b.contador == 1 ? " vez" : " veces") << " en el archivo.\n";
+    else cout << "No hay registros para la IP " << s << ".\n";
+    cout << "Comparaciones de la busqueda: " << b.comparaciones << "\n"
+         << "Altura actual del BST:        " << ips.height() << "\n"
+         << "ceil(log2 n), n = " << n << " IPs:    " << minimo << "\n";
+    if (ips.height() > minimo)
+        cout << "El arbol tiene " << ips.height() - minimo << " niveles mas que el ideal porque no se balancea solo;"
+             << " depende del orden en que llegaron las IPs.\n";
+    else
+        cout << "El arbol esta tan bajo como puede estar.\n";
+}
+
 int main() {
     vector<Registro> registros;
     BST<IP> ips;
@@ -222,6 +249,7 @@ int main() {
             if (op == 1) ordenar<greater<Registro>>(registros, "MaxHeap", "de mayor a menor", "output608-1.out");
             else if (op == 2) ordenar<less<Registro>>(registros, "MinHeap", "de menor a mayor", "output608-2.out");
             else if (op == 3) top10(ips);
+            else buscarIP(ips);
         } catch (const exception& e) {
             cout << "Ocurrio un error: " << e.what() << ". Intenta de nuevo.\n";
         }

@@ -173,6 +173,7 @@ int main() {
         // si algo truena se avisa y se regresa al menu en lugar de cerrar el programa
         try {
             if (op == 1) ordenar<greater<Registro>>(registros, "MaxHeap", "de mayor a menor", "output608-1.out");
+            else if (op == 2) ordenar<less<Registro>>(registros, "MinHeap", "de menor a mayor", "output608-2.out");
         } catch (const exception& e) {
             cout << "Ocurrio un error: " << e.what() << ". Intenta de nuevo.\n";
         }

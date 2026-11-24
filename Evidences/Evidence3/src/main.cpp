@@ -230,7 +230,8 @@ int main() {
         if (cargar(archivo, registros, ips, omitidas)) break;
         cout << "No se pudo abrir '" << archivo << "'. Intenta de nuevo.\n";
     }
-    cout << "Registros validos: " << registros.size() << "\n"
+    cout << "Registros leidos:  " << registros.size() + omitidas << "\n"
+         << "Registros validos: " << registros.size() << "\n"
          << "Lineas omitidas:   " << omitidas << "\n"
          << "IPs distintas:     " << ips.size() << "\n";
 

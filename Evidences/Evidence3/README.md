@@ -14,7 +14,8 @@ Evidence3/
 │   └── Registro.h    lectura y validación de cada línea del JSON
 ├── src/
 │   ├── main.cpp      programa principal con el menú
-│   └── pruebas.cpp   pruebas de las estructuras con casos de borde
+│   ├── pruebas.cpp   pruebas de las estructuras con casos de borde
+│   └── experimento.cpp  altura del BST según el orden en que se insertan las IPs
 ├── data/
 │   └── log607-3.json
 ├── build/            aquí van los ejecutables (no se suben al repo)
@@ -31,6 +32,7 @@ Necesitas `g++` con soporte para C++17. Desde la carpeta `Evidence3`:
 mkdir build
 g++ -std=c++17 -static src/main.cpp -o build/main
 g++ -std=c++17 -static src/pruebas.cpp -o build/pruebas
+g++ -std=c++17 -static src/experimento.cpp -o build/experimento
 ```
 
 El `-static` es importante en Windows. Sin él, si tienes Git instalado, el programa puede agarrar una librería de C++ que no es la de tu compilador y cerrarse sin mostrar nada.
@@ -41,6 +43,7 @@ El `-static` es importante en Windows. Sin él, si tienes Git instalado, el prog
 mkdir -p build
 g++ -std=c++17 src/main.cpp -o build/main
 g++ -std=c++17 src/pruebas.cpp -o build/pruebas
+g++ -std=c++17 src/experimento.cpp -o build/experimento
 ```
 
 ## Cómo correrlo
@@ -55,6 +58,8 @@ build\main        (Windows)
 Primero pide el archivo. Si das Enter sin escribir nada, carga `log607-3.json`. Las líneas con errores (fecha que no existe, hora fuera de rango, IP mal escrita, campos que faltan o mensaje vacío) se muestran con su número de línea y el motivo, y se saltan.
 
 Después aparece el menú:
+
+Las opciones 1 y 2 ordenan primero por IP (como número), luego por fecha y hora, y si todo eso empata, por mensaje.
 
 1. **Ordenar de mayor a menor (MaxHeap).** Pide una predicción de cómo crecerían las comparaciones con el doble de registros, ordena y muestra el tiempo, las comparaciones, la altura del heap y si la predicción se cumplió. Genera `out/output608-1.out`.
 2. **Ordenar de menor a mayor (MinHeap).** Lo mismo, pero con MinHeap. Genera `out/output608-2.out`.
@@ -75,6 +80,14 @@ build\pruebas
 ```
 
 Prueba el heap, el heap sort, la validación de IPs y el BST con casos de borde: estructuras vacías, un solo elemento, valores repetidos, IPs que no existen y un árbol degenerado. Cada caso muestra el resultado esperado y el obtenido, y al final dice cuántas pasaron.
+
+## Experimento del BST
+
+```
+build\experimento
+```
+
+Mete las mismas IPs al BST en tres órdenes distintos (como vienen en el archivo, ordenadas de menor a mayor y de mayor a menor) y compara la altura y las comparaciones de búsqueda. Sirve para ver que, si las IPs llegan ordenadas, el árbol se vuelve una lista.
 
 ## Video explicativo
 

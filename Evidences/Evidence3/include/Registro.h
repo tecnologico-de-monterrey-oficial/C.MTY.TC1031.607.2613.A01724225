@@ -12,11 +12,11 @@ struct Registro {
     std::string desc;
     std::string linea;
 
-    // primero por fecha y hora, si empatan por ip y luego por mensaje
+    // primero por ip como numero, si empatan por fecha y hora y al final por mensaje
     // asi el orden siempre sale igual aunque el heap no sea estable
     bool operator<(const Registro& o) const {
-        if (clave != o.clave) return clave < o.clave;
         if (!(ip == o.ip)) return ip < o.ip;
+        if (clave != o.clave) return clave < o.clave;
         return desc < o.desc;
     }
     bool operator>(const Registro& o) const { return o < *this; }
